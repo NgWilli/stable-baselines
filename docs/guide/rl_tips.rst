@@ -47,6 +47,8 @@ Please refer to *Tips and Tricks when creating a custom environment* paragraph b
 Current Limitations of RL
 -------------------------
 1. MODEL FREE RL的采样效率很低，经常学很久才能学到部分有用的东西，这也就局限了所有的RL进展几乎都是在simulator中发现的，比如ETH的机器人，是在simu里面训练好后拿到现网玩的。我们需要做好增大数据量的准备。
+
+
 You have to be aware of the current `limitations <https://www.alexirpan.com/2018/02/14/rl-hard.html>`_ of reinforcement learning.
 
 
@@ -56,10 +58,16 @@ That's why most of the successes in RL were achieved on games or in simulation o
 As a general advice, to obtain better performances, you should augment the budget of the agent (number of training timesteps).
 
 2. reward函数需要一些大师策略来辅助指定，同时可以关注reward engineer/shaping等工作。
+
+
 In order to achieve the desired behavior, expert knowledge is often required to design an adequate reward function.
 This *reward engineering* (or *RewArt* as coined by `Freek Stulp <http://www.freekstulp.net/>`_), necessitates several iterations. As a good example of reward shaping,
 you can take a look at `Deep Mimic paper <https://xbpeng.github.io/projects/DeepMimic/index.html>`_ which combines imitation learning and reinforcement learning to do acrobatic moves.
+
+
 3. RLtraining中经常会遇到大量性能下降，因为探索失败-反馈失败是一个负反馈过程。
+
+
 One last limitation of RL is the instability of training. That is to say, you can observe during training a huge drop in performance.
 This behavior is particularly present in ``DDPG``, that's why its extension ``TD3`` tries to tackle that issue.
 Other method, like ``TRPO`` or ``PPO`` make use of a *trust region* to minimize that problem by avoiding too large update.
@@ -67,6 +75,8 @@ Other method, like ``TRPO`` or ``PPO`` make use of a *trust region* to minimize 
 
 How to evaluate an RL algorithm?
 --------------------------------
+
+1. 在RL训练过程中是有随机探索的，所以一般需要一个单独的test环境来评价RL。
 
 Because most algorithms use exploration noise during training, you need a separate test environment to evaluate the performance
 of your agent at a given time. It is recommended to periodically evaluate your agent for ``n`` test episodes (``n`` is usually between 5 and 20)
@@ -91,6 +101,14 @@ and this `issue <https://github.com/hill-a/stable-baselines/issues/199>`_ by Cé
 
 Which algorithm should I use?
 =============================
+1. 如何选择RL算法，可以看actionspace是否连续，比如DQN没法工作在连续空间，SAC就是工作在连续action space的。
+   还可以看寻来你是否可以并行，如果可以那么选A2C
+总结：
+离散动作 单线程 DQN系列 ACER系列。DQN虽然训练的慢，但是因为有replay采样效率很高。
+离散动作 多线程 PPO2 A2C ACKTR ACER  如果可以使用MPI 可以尝试PP01 和 TRPO
+连续动作 单线程 SAC TD3  可以考虑zoo的预训练参数
+连续动作 多线程  PPO2, TRPO or A2C  可以考虑zoo的预训练参数
+
 
 There is no silver bullet in RL, depending on your needs and problem, you may choose one or the other.
 The first distinction comes from your action space, i.e., do you have discrete (e.g. LEFT, RIGHT, ...)
@@ -169,6 +187,9 @@ If you want to learn about how to create a custom environment, we recommend you 
 We also provide a `colab notebook <https://colab.research.google.com/github/araffin/rl-tutorial-jnrr19/blob/master/5_custom_gym_env.ipynb>`_ for
 a concrete example of creating a custom gym environment.
 
+
+1. 对环境  总是normalize观测值和action 争取到-1，1    很多连续动作空间算法依赖高斯分布
+           开始时有大师reward
 Some basic advice:
 
 - always normalize your observation space when you can, i.e., when you know the boundaries
@@ -229,6 +250,8 @@ by John Schulman are quite useful (`video <https://www.youtube.com/watch?v=8Ecda
 
 We *recommend following those steps to have a working RL algorithm*:
 
+
+对待问题讲究循序渐进 可以现在玩具环境里面玩一玩，再去困难的场景里面搞。
 1. Read the original paper several times
 2. Read existing implementations (if available)
 3. Try to have some "sign of life" on toy problems
@@ -237,6 +260,11 @@ We *recommend following those steps to have a working RL algorithm*:
 
 You need to be particularly careful on the shape of the different objects you are manipulating (a broadcast mistake will fail silently cf `issue #75 <https://github.com/hill-a/stable-baselines/pull/76>`_)
 and when to stop the gradient propagation.
+
+
+以下时推荐的玩具环境
+
+
 
 A personal pick (by @araffin) for environments with gradual difficulty in RL with continuous actions:
 
