@@ -46,7 +46,7 @@ Please refer to *Tips and Tricks when creating a custom environment* paragraph b
 
 Current Limitations of RL
 -------------------------
-
+1. MODEL FREE RL的采样效率很低，经常学很久才能学到部分有用的东西，这也就局限了所有的RL进展几乎都是在simulator中发现的，比如ETH的机器人，是在simu里面训练好后拿到现网玩的。我们需要做好增大数据量的准备。
 You have to be aware of the current `limitations <https://www.alexirpan.com/2018/02/14/rl-hard.html>`_ of reinforcement learning.
 
 
@@ -55,11 +55,11 @@ That's why most of the successes in RL were achieved on games or in simulation o
 
 As a general advice, to obtain better performances, you should augment the budget of the agent (number of training timesteps).
 
-
+2. reward函数需要一些大师策略来辅助指定，同时可以关注reward engineer/shaping等工作。
 In order to achieve the desired behavior, expert knowledge is often required to design an adequate reward function.
 This *reward engineering* (or *RewArt* as coined by `Freek Stulp <http://www.freekstulp.net/>`_), necessitates several iterations. As a good example of reward shaping,
 you can take a look at `Deep Mimic paper <https://xbpeng.github.io/projects/DeepMimic/index.html>`_ which combines imitation learning and reinforcement learning to do acrobatic moves.
-
+3. RLtraining中经常会遇到大量性能下降，因为探索失败-反馈失败是一个负反馈过程。
 One last limitation of RL is the instability of training. That is to say, you can observe during training a huge drop in performance.
 This behavior is particularly present in ``DDPG``, that's why its extension ``TD3`` tries to tackle that issue.
 Other method, like ``TRPO`` or ``PPO`` make use of a *trust region* to minimize that problem by avoiding too large update.
